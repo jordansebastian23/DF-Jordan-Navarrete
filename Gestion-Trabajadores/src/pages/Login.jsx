@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { login } from '../services/api';
 
 const Login = () => {
@@ -7,6 +7,8 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const fromDashboard = location.state?.fromDashboard;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,6 +29,11 @@ const Login = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-800 to-indigo-900">
             <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md mx-4 md:mx-0">
                 <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Iniciar Sesión</h2>
+                {fromDashboard && (
+                    <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                        Por favor, inicia sesión para acceder al Dashboard.
+                    </div>
+                )}
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
@@ -42,7 +49,7 @@ const Login = () => {
                             id="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Ingresa tu usuario"
                             required
                         />
@@ -56,7 +63,7 @@ const Login = () => {
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Ingresa tu contraseña"
                             required
                         />

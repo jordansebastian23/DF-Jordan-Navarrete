@@ -70,7 +70,7 @@ const Login = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
+                        className="w-full bg-indigo-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
                     >
                         Iniciar Sesión
                     </button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchUsers, deleteUser, updateUser, addUser } from '../services/api';
 
 const Dashboard = () => {
     const [users, setUsers] = useState([]);
@@ -12,31 +12,27 @@ const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        fetchUsers();
+        fetchUsersData();
     }, []);
 
-    const fetchUsers = async () => {
+    const fetchUsersData = async () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
                 setError("Token no encontrado");
                 return;
             }
-            const response = await axios.get("http://localhost:5146/api/Employee", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setUsers(response.data);
+            const data = await fetchUsers(token);
+            setUsers(data);
         } catch (err) {
             setError("No se pudo cargar la lista de usuarios");
         }
     };
 
-    const deleteUser = async (id) => {
+    const handleDeleteUser = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:5146/api/Employee/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await deleteUser(id, token);
             setUsers(users.filter((user) => user.id !== id));
         } catch (err) {
             setError("No se pudo eliminar el usuario");
@@ -63,30 +59,20 @@ const Dashboard = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.put(
-                `http://localhost:5146/api/Employee/${userToEdit.id}`,
-                { name, email, department },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setUsers(
-                users.map((user) => (user.id === userToEdit.id ? response.data : user))
-            );
+            const updatedUser = await updateUser(userToEdit.id, { name, email, department }, token);
+            setUsers(users.map((user) => (user.id === userToEdit.id ? updatedUser : user)));
             closeModal();
         } catch (err) {
             setError("No se pudo actualizar el usuario");
         }
     };
 
-    const addUser = async (e) => {
+    const handleAddUser = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.post(
-                "http://localhost:5146/api/Employee",
-                { name, email, department },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setUsers([...users, response.data]);
+            const newUser = await addUser({ name, email, department }, token);
+            setUsers([...users, newUser]);
             setName("");
             setEmail("");
             setDepartment("");
@@ -191,7 +177,7 @@ const Dashboard = () => {
                 <section className="mb-8">
                     <h2 className="text-xl font-bold text-gray-700 mb-4">Añadir Usuario</h2>
                     <form
-                        onSubmit={addUser}
+                        onSubmit={handleAddUser}
                         className="bg-white p-4 md:p-6 rounded-lg shadow-md w-full">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <input
@@ -253,7 +239,7 @@ const Dashboard = () => {
                                                     Editar
                                                 </button>
                                                 <button
-                                                    onClick={() => deleteUser(user.id)}
+                                                    onClick={() => handleDeleteUser(user.id)}
                                                     className="ml-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-200"
                                                 >
                                                     Eliminar
@@ -326,7 +312,6 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-            ...
         </div>
     );
 };

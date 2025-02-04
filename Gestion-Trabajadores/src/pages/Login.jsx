@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { login } from '../services/api';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -11,16 +11,9 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(
-                'http://localhost:5146/api/auth/login', 
-                { username, password },
-                { headers: { 'Content-Type': 'application/json' } }
-            );
-
-            if (response.data.token) {
-                // Guarda el token en localStorage
-                localStorage.setItem('token', response.data.token);
-
+            const data = await login(username, password);
+            if (data.token) {
+                localStorage.setItem('token', data.token);
                 navigate('/dashboard');
             } else {
                 setError('Error en la autenticación');
